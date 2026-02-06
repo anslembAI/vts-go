@@ -11,17 +11,32 @@ const FRIEND_NAME = "Sarah";
 interface ChatProps {
     userId: string;
     userName: string;
+    friendId: string;
+    friendName: string;
+    onBack: () => void;
 }
 
-const Chat: React.FC<ChatProps> = ({ userId, userName }) => {
+// Define minimal Message type based on schema
+interface Message {
+    _id: string;
+    body: string;
+    author: string;
+    type: "text" | "request";
+    requestId?: any; // strict typing would require importing Id
+}
+
+const Chat: React.FC<ChatProps> = ({ userId, userName, friendId, friendName, onBack }) => {
     const [text, setText] = useState('');
     const [isBalanceOpen, setIsBalanceOpen] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+    // Generate simple conversation ID (sort ids to ensure uniqueness regardless of initiator)
+    const conversationId = [userId, friendId].sort().join("_");
+
     // Auto-scroll ref
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const messages = useQuery(api.chat.listMessages) || [];
+    const messages = useQuery(api.chat.listMessages, { conversationId }) || [];
     const sendMessage = useMutation(api.chat.sendMessage);
 
     useEffect(() => {
@@ -32,7 +47,7 @@ const Chat: React.FC<ChatProps> = ({ userId, userName }) => {
         e.preventDefault();
         if (!text.trim()) return;
 
-        await sendMessage({ body: text, author: userId });
+        await sendMessage({ body: text, author: userId, conversationId });
         setText('');
     };
 
@@ -40,11 +55,13 @@ const Chat: React.FC<ChatProps> = ({ userId, userName }) => {
         <div className="chat-container">
             {/* Header */}
             <header className="chat-header">
+                <button className="back-btn" onClick={onBack}>←</button>
                 <div className="friend-info">
-                    <div className="avatar">S</div>
+                    <div className="avatar">{friendName[0]}</div>
                     <div className="details">
-                        <h2>{FRIEND_NAME}</h2>
-                        <span className="status">Online • Wifi Connected</span>
+                        <h2>{friendName}</h2>
+                        <span className="status">Online</span>
+                        <span className="user-label">Logged in as: {userName}</span>
                     </div>
                 </div>
                 <button
@@ -60,7 +77,7 @@ const Chat: React.FC<ChatProps> = ({ userId, userName }) => {
 
             {/* Messages Area */}
             <div className="messages-area">
-                {messages.map((msg, idx) => {
+                {messages.map((msg: any, idx: number) => {
                     const isMe = msg.author === userId;
                     return (
                         <div key={idx} className={`message-row ${isMe ? 'me' : 'them'}`}>
@@ -94,7 +111,7 @@ const Chat: React.FC<ChatProps> = ({ userId, userName }) => {
             <MoneyDrawer
                 isOpen={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
-                chatId="chat_1"
+                chatId={conversationId}
                 userId={userId}
             />
 
@@ -116,6 +133,15 @@ const Chat: React.FC<ChatProps> = ({ userId, userName }) => {
                     position: sticky;
                     top: 0;
                     z-index: 10;
+                }
+                .back-btn {
+                    background: none;
+                    color: var(--text-primary);
+                    font-size: 1.5rem;
+                    margin-right: 10px;
+                    padding: 4px;
+                    border: none;
+                    cursor: pointer;
                 }
                 .friend-info {
                     display: flex;
@@ -139,6 +165,20 @@ const Chat: React.FC<ChatProps> = ({ userId, userName }) => {
                 .details .status {
                     font-size: 0.7rem;
                     color: var(--color-accent);
+                    display: block;
+                }
+                .user-label {
+                    font-size: 0.6rem;
+                    color: var(--text-muted);
+                    display: block;
+                    margin-top: 2px;
+                }
+                .back-btn {
+                    background: none;
+                    color: var(--text-primary);
+                    font-size: 1.5rem;
+                    margin-right: 10px;
+                    padding: 4px;
                 }
                 .balance-toggle {
                     background: transparent;

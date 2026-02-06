@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: string, userId: string }> = ({ isOpen, onClose, chatId, userId }) => {
-    // Get last rate
+    // chatId is indeed the conversationId here for simplicity
     const lastRate = useQuery(api.chat.getLastRate, { chatId }) || 6.80;
 
     const [amount, setAmount] = useState<string>('');
@@ -28,7 +28,8 @@ const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: stri
         await createRequest({
             usd_amount: parseFloat(amount),
             ttd_rate: numRate,
-            author: userId // In real app, this comes from auth context
+            author: userId,
+            conversationId: chatId
         });
 
         await saveRate({ chatId, rate: numRate });

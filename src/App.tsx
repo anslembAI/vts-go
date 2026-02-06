@@ -4,11 +4,14 @@ import WifiGatekeeper from "./components/WifiGatekeeper";
 import Chat from "./components/Chat";
 import AuthModal from "./components/AuthModal";
 
+import UserList from "./components/UserList";
+
 // Getting the convex URL from environment variables
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
 function App() {
   const [user, setUser] = useState<{ id: string, name: string } | null>(null);
+  const [selectedFriend, setSelectedFriend] = useState<{ id: string, name: string } | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("vts_user");
@@ -23,12 +26,37 @@ function App() {
     localStorage.setItem("vts_user", JSON.stringify(userData));
   };
 
+  const handleLogout = () => {
+    setUser(null);
+    setSelectedFriend(null);
+    localStorage.removeItem("vts_user");
+    // Force reload to clear any cached states
+    window.location.reload();
+  };
+
   return (
     <ConvexProvider client={convex}>
       <WifiGatekeeper>
         <div className="app-container">
           {!user && <AuthModal onLogin={handleLogin} />}
-          {user && <Chat userId={user.id} userName={user.name} />}
+
+          {user && !selectedFriend && (
+            <UserList
+              currentUserId={user.id}
+              onSelectUser={(id, name) => setSelectedFriend({ id, name })}
+              onLogout={handleLogout}
+            />
+          )}
+
+          {user && selectedFriend && (
+            <Chat
+              userId={user.id}
+              userName={user.name}
+              friendId={selectedFriend.id}
+              friendName={selectedFriend.name}
+              onBack={() => setSelectedFriend(null)}
+            />
+          )}
         </div>
       </WifiGatekeeper>
     </ConvexProvider>

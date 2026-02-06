@@ -7,7 +7,8 @@ export default defineSchema({
     author: v.string(),
     type: v.union(v.literal("text"), v.literal("request")),
     requestId: v.optional(v.id("requests")), // Link to a request if it's a request type
-  }),
+    conversationId: v.optional(v.string()), // Optional for backward compatibility, but required for new chats
+  }).index("by_conversationId", ["conversationId"]),
   requests: defineTable({
     usd_amount: v.number(),
     ttd_rate: v.number(),
@@ -20,8 +21,5 @@ export default defineSchema({
     chat_id: v.string(),
     last_rate: v.number(),
   }),
-  users: defineTable({
-    fullName: v.string(),
-    password: v.string(), // Note: In production, hash this!
-  }).index("by_fullName", ["fullName"]),
+  users: defineTable(v.any()).index("by_fullName", ["fullName"]),
 });

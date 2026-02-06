@@ -2,19 +2,24 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const listMessages = query({
-    args: {},
-    handler: async (ctx) => {
-        return await ctx.db.query("messages").collect();
+    args: { conversationId: v.optional(v.string()) },
+    handler: async (ctx, args) => {
+        if (!args.conversationId) return [];
+        return await ctx.db
+            .query("messages")
+            .withIndex("by_conversationId", (q) => q.eq("conversationId", args.conversationId))
+            .collect();
     },
 });
 
 export const sendMessage = mutation({
-    args: { body: v.string(), author: v.string() },
+    args: { body: v.string(), author: v.string(), conversationId: v.string() },
     handler: async (ctx, args) => {
         await ctx.db.insert("messages", {
             body: args.body,
             author: args.author,
             type: "text",
+            conversationId: args.conversationId,
         });
     },
 });
@@ -24,6 +29,7 @@ export const createRequest = mutation({
         usd_amount: v.number(),
         ttd_rate: v.number(),
         author: v.string(),
+        conversationId: v.string(),
     },
     handler: async (ctx, args) => {
         const requestId = await ctx.db.insert("requests", {
@@ -39,6 +45,7 @@ export const createRequest = mutation({
             author: args.author,
             type: "request",
             requestId: requestId,
+            conversationId: args.conversationId,
         });
         return requestId;
     },

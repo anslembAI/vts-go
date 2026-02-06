@@ -1,19 +1,17 @@
-# Latest Update: Custom Authentication
+# Latest Update: Real Users & 1-on-1 Chat
 
-I have implemented a custom "No Email" authentication system.
+I have implemented the "Real Users" functionality (1-on-1 Chat).
 
 ## New Features
-- **Auth Modal**: A popup that appears for unauthenticated users.
-- **Sign Up / Sign In**: Supports creating accounts and logging in with just "Full Name" and "Password".
-- **Persistent Session**: Keeps you logged in using Local Storage.
-
-## Technical Changes
-- **Convex Schema**: Added `users` table.
-- **Backend**: Added `convex/auth.ts` for handling login/register mutations.
-- **Frontend**: Created `src/components/AuthModal.tsx` and updated `App.tsx` and `Chat.tsx` to handle user state.
+- **User List**: Once logged in, you will now see a list of other registered users (Contacts).
+- **Navigation**: Clicking a contact opens a 1-on-1 chat with them.
+- **Chat Isolation**: 
+    -   Messages are now private to the conversation (based on the two user IDs).
+    -   Requests ("Money Drawer") are also linked to the specific conversation.
+- **Schema**: Added `conversationId` to messages and requests filtering.
 
 ## Verification
 - Reload the app.
-- You should be prompted to log in.
-- Create an account or sign in.
-- Verify that messages you send are now linked to your new user identity.
+- You should see your user list.
+- Click a user to start chatting.
+- **Note**: Old messages will not appear in the new filtered views.
