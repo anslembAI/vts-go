@@ -8,9 +8,10 @@ interface SettingsProps {
     userId: string;
     currentUser: any;
     onLogout: () => void;
+    onOpenAdmin: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ userId, currentUser, onLogout }) => {
+const Settings: React.FC<SettingsProps> = ({ userId, currentUser, onLogout, onOpenAdmin }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -82,6 +83,12 @@ const Settings: React.FC<SettingsProps> = ({ userId, currentUser, onLogout }) =>
             </div>
 
             <div className="settings-list">
+                {currentUser?.isAdmin && (
+                    <div className="setting-item" onClick={onOpenAdmin}>
+                        <span className="icon">🛡️</span>
+                        <span>Admin Panel</span>
+                    </div>
+                )}
                 <div className="setting-item" onClick={onLogout}>
                     <span className="icon">🚪</span>
                     <span>Sign Out</span>

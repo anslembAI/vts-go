@@ -2,8 +2,12 @@ import React from 'react';
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
-const BalanceDashboard: React.FC = () => {
-    const balance = useQuery(api.chat.getBalance);
+interface BalanceDashboardProps {
+    conversationId: string;
+}
+
+const BalanceDashboard: React.FC<BalanceDashboardProps> = ({ conversationId }) => {
+    const balance = useQuery(api.chat.getBalance, { conversationId });
 
     if (!balance) return <div className="balance-dashboard loading">Loading balances...</div>;
 
@@ -32,6 +36,13 @@ const BalanceDashboard: React.FC = () => {
                     background: var(--bg-tertiary);
                     border-bottom: 1px solid var(--glass-border);
                     animation: slideDown 0.3s ease;
+                }
+                .balance-dashboard.loading {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: var(--text-muted);
+                    font-size: 0.9rem;
                 }
                 .balance-card {
                     background: var(--bg-secondary);
@@ -71,3 +82,4 @@ const BalanceDashboard: React.FC = () => {
 };
 
 export default BalanceDashboard;
+

@@ -84,13 +84,33 @@ export const getRequest = query({
 });
 
 export const getBalance = query({
-    args: {},
-    handler: async (ctx) => {
-        const requests = await ctx.db.query("requests").collect();
-        const pending = requests.filter(r => r.status === "pending").reduce((acc, r) => acc + r.usd_amount, 0);
+    args: { conversationId: v.string() },
+    handler: async (ctx, args) => {
+        // Get all messages in this conversation that are requests
+        const messages = await ctx.db
+            .query("messages")
+            .withIndex("by_conversationId", (q) => q.eq("conversationId", args.conversationId))
+            .filter((q) => q.eq(q.field("type"), "request"))
+            .collect();
 
-        // Calculate received in TTD
-        const received = requests
+        // Get the request IDs from these messages
+        const requestIds = messages
+            .map(m => m.requestId)
+            .filter((id): id is NonNullable<typeof id> => id !== undefined);
+
+        // Fetch all requests for this conversation
+        const requests = await Promise.all(
+            requestIds.map(id => ctx.db.get(id))
+        );
+
+        // Filter out any null results and calculate balances
+        const validRequests = requests.filter((r): r is NonNullable<typeof r> => r !== null);
+
+        const pending = validRequests
+            .filter(r => r.status === "pending")
+            .reduce((acc, r) => acc + r.usd_amount, 0);
+
+        const received = validRequests
             .filter(r => r.status === "received")
             .reduce((acc, r) => acc + (r.usd_amount * r.ttd_rate), 0);
 
@@ -122,6 +142,17 @@ export const getLastRate = query({
         const pref = await ctx.db.query("preferences")
             .filter(q => q.eq(q.field("chat_id"), args.chatId))
             .first();
-        return pref?.last_rate ?? 6.80; // Default
+
+        if (pref?.last_rate) {
+            return pref.last_rate;
+        }
+
+        // Fallback to standard rate
+        const config = await ctx.db
+            .query("system_config")
+            .withIndex("by_key", (q) => q.eq("key", "standard_rate"))
+            .first();
+
+        return (config?.value as number) ?? 8.4; // Default if not set in DB
     }
 })

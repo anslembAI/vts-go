@@ -61,7 +61,7 @@ const Chat: React.FC<ChatProps> = ({ userId, userName, friendId, friendName, onB
             </header>
 
             {/* Dashboard Area */}
-            {isBalanceOpen && <BalanceDashboard />}
+            {isBalanceOpen && <BalanceDashboard conversationId={conversationId} />}
 
             {/* Messages Area */}
             <div className="messages-area">

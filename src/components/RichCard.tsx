@@ -62,7 +62,7 @@ const RichCard: React.FC<RichCardProps> = ({ requestId, isSender }) => {
                     onClick={handleConfirm}
                     disabled={loading}
                 >
-                    {loading ? 'Processing...' : 'Pay Request'}
+                    {loading ? 'Processing...' : 'Mark Received'}
                 </button>
             )}
 

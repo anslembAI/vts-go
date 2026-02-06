@@ -4,10 +4,11 @@ import { api } from "../../convex/_generated/api";
 
 const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: string, userId: string }> = ({ isOpen, onClose, chatId, userId }) => {
     // chatId is indeed the conversationId here for simplicity
-    const lastRate = useQuery(api.chat.getLastRate, { chatId }) || 6.80;
+    const lastRate = useQuery(api.chat.getLastRate, { chatId }) || 8.40;
 
     const [amount, setAmount] = useState<string>('');
-    const [rate, setRate] = useState<string>('6.80');
+    const [rate, setRate] = useState<string>('8.40');
+    const [receivedTTD, setReceivedTTD] = useState<string>('');
     const [calculating, setCalculating] = useState(false);
 
     const createRequest = useMutation(api.chat.createRequest);
@@ -18,6 +19,14 @@ const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: stri
             setRate(lastRate.toString());
         }
     }, [lastRate]);
+
+    // Auto-fill received TTD when amount and rate change
+    useEffect(() => {
+        if (amount && rate) {
+            const ttdTotal = parseFloat(amount) * parseFloat(rate);
+            setReceivedTTD(ttdTotal.toFixed(2));
+        }
+    }, [amount, rate]);
 
     const handleSend = async () => {
         if (!amount || !rate) return;
@@ -36,6 +45,7 @@ const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: stri
 
         setCalculating(false);
         setAmount('');
+        setReceivedTTD('');
         onClose();
     };
 
@@ -74,6 +84,22 @@ const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: stri
                     <div className="result-display">
                         <label>Equivalent</label>
                         <div className="ttd-value">${ttdTotal.toFixed(2)} TTD</div>
+                    </div>
+                </div>
+
+                <div className="input-group">
+                    <label>Received (TTD)</label>
+                    <div className="input-wrapper">
+                        <span className="prefix-small">$</span>
+                        <input
+                            type="number"
+                            step="0.01"
+                            value={receivedTTD}
+                            onChange={(e) => setReceivedTTD(e.target.value)}
+                            placeholder="Actual TTD received"
+                            className="received-input"
+                        />
+                        <span className="suffix">TTD</span>
                     </div>
                 </div>
 
@@ -143,6 +169,16 @@ const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: stri
                     position: absolute;
                     left: 0;
                 }
+                .prefix-small {
+                    font-size: 1rem;
+                    color: var(--text-muted);
+                    margin-right: 4px;
+                }
+                .suffix {
+                    font-size: 0.9rem;
+                    color: var(--text-muted);
+                    margin-left: 8px;
+                }
                 input {
                     background: transparent;
                     border: none;
@@ -151,6 +187,10 @@ const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: stri
                     padding: 8px 0;
                     outline: none;
                     font-size: 1.2rem;
+                }
+                .received-input {
+                    color: var(--color-accent);
+                    font-weight: 500;
                 }
                 .input-row {
                     display: flex;
@@ -183,3 +223,4 @@ const MoneyDrawer: React.FC<{ isOpen: boolean, onClose: () => void, chatId: stri
 };
 
 export default MoneyDrawer;
+
