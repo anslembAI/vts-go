@@ -57,6 +57,17 @@ const WifiGatekeeper: React.FC<{ children: React.ReactNode }> = ({ children }) =
                 <button className="reconnect-btn" onClick={() => window.location.reload()}>
                     Check Connection
                 </button>
+                <div style={{ marginTop: '20px' }}>
+                    <button
+                        className="logout-link"
+                        onClick={() => {
+                            localStorage.removeItem("vts_user");
+                            window.location.reload();
+                        }}
+                    >
+                        Sign Out / Reset
+                    </button>
+                </div>
             </div>
             <style>{`
         .gatekeeper-overlay {
@@ -89,6 +100,17 @@ const WifiGatekeeper: React.FC<{ children: React.ReactNode }> = ({ children }) =
         }
         .reconnect-btn:active {
             transform: scale(0.95);
+        }
+        .logout-link {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            text-decoration: underline;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .logout-link:hover {
+            color: var(--color-accent);
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }

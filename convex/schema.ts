@@ -21,5 +21,9 @@ export default defineSchema({
     chat_id: v.string(),
     last_rate: v.number(),
   }),
-  users: defineTable(v.any()).index("by_fullName", ["fullName"]),
+  users: defineTable({
+    fullName: v.string(),
+    password: v.string(),
+    imageStorageId: v.optional(v.id("_storage")),
+  }).index("by_fullName", ["fullName"]),
 });

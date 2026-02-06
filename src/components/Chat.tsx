@@ -5,24 +5,12 @@ import RichCard from './RichCard';
 import MoneyDrawer from './MoneyDrawer';
 import BalanceDashboard from './BalanceDashboard';
 
-// Mock User ID for prototype
-const FRIEND_NAME = "Sarah";
-
 interface ChatProps {
     userId: string;
     userName: string;
     friendId: string;
     friendName: string;
     onBack: () => void;
-}
-
-// Define minimal Message type based on schema
-interface Message {
-    _id: string;
-    body: string;
-    author: string;
-    type: "text" | "request";
-    requestId?: any; // strict typing would require importing Id
 }
 
 const Chat: React.FC<ChatProps> = ({ userId, userName, friendId, friendName, onBack }) => {

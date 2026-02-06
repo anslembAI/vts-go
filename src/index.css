@@ -1,18 +1,21 @@
 :root {
   --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --bg-tertiary: #2c2c2c;
+  /* Deep Charcoal/Black */
+  --bg-secondary: #1E1E24;
+  --bg-tertiary: #2B2B33;
 
   --color-accent: #14FFEC;
+  /* Neon Teal */
   --color-accent-dim: rgba(20, 255, 236, 0.1);
   --color-secondary: #7C4DFF;
-  
+  /* Soft Purple */
+
   --text-primary: #ffffff;
   --text-secondary: #a0a0a0;
   --text-muted: #666666;
 
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  
+
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -20,13 +23,35 @@
   --spacing-xl: 32px;
 
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
   --radius-full: 9999px;
 
   --shadow-elevation: 0 4px 20px rgba(0, 0, 0, 0.5);
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.app-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 * {
@@ -44,6 +69,11 @@ body {
   overflow-x: hidden;
 }
 
+#root {
+  width: 100%;
+  height: 100%;
+}
+
 button {
   cursor: pointer;
   border: none;
@@ -54,9 +84,11 @@ button {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--bg-tertiary);
   border-radius: var(--radius-full);

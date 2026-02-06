@@ -1,29 +1,33 @@
 import React from 'react';
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface UserListProps {
     currentUserId: string;
+    currentUserName: string;
     onSelectUser: (friendId: string, friendName: string) => void;
     onLogout: () => void;
 }
 
-const UserList: React.FC<UserListProps> = ({ currentUserId, onSelectUser, onLogout }) => {
+const UserList: React.FC<UserListProps> = ({ currentUserId, currentUserName, onSelectUser, onLogout }) => {
     // @ts-ignore
     const users = useQuery(api.users.getAll, { currentUserId: currentUserId as Id<"users"> });
-
-    if (!users) return <div className="loading">Loading contacts...</div>;
 
     return (
         <div className="user-list-container">
             <header className="list-header">
-                <h2>Contacts</h2>
+                <div className="header-left">
+                    <h2>Contacts</h2>
+                    <span className="current-user-badge">{currentUserName}</span>
+                </div>
                 <button className="logout-btn" onClick={onLogout}>Sign Out</button>
             </header>
 
             <div className="list-content">
-                {users.length === 0 ? (
+                {!users ? (
+                    <div className="loading">Loading contacts...</div>
+                ) : users.length === 0 ? (
                     <p className="empty-state">No other users found.</p>
                 ) : (
                     users.map((user: any) => (
@@ -57,8 +61,19 @@ const UserList: React.FC<UserListProps> = ({ currentUserId, onSelectUser, onLogo
                     justify-content: space-between;
                     align-items: center;
                 }
+                .header-left {
+                    display: flex;
+                    flex-direction: column;
+                }
                 .list-header h2 {
                     color: var(--color-accent);
+                    margin: 0;
+                    font-size: 1.2rem;
+                }
+                .current-user-badge {
+                    font-size: 0.8rem;
+                    color: var(--text-secondary);
+                    margin-top: 4px;
                 }
                 .logout-btn {
                     padding: 8px 16px;
@@ -104,7 +119,7 @@ const UserList: React.FC<UserListProps> = ({ currentUserId, onSelectUser, onLogo
                     font-size: 0.75rem;
                     color: #00C853; /* Online green */
                 }
-                .empty-state {
+                .empty-state, .loading {
                     text-align: center;
                     padding: 40px;
                     color: var(--text-muted);
