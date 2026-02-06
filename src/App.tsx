@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ConvexProvider, ConvexReactClient, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
-import WifiGatekeeper from "./components/WifiGatekeeper";
+
 import Chat from "./components/Chat";
 import AuthModal from "./components/AuthModal";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -54,59 +54,59 @@ function App() {
 
   return (
     <ConvexProvider client={convex}>
-      <WifiGatekeeper>
-        <ErrorBoundary onReset={handleLogout}>
-          <div className="app-container">
-            {!user && <AuthModal onLogin={handleLogin} />}
 
-            {user && selectedFriend ? (
-              <ErrorBoundary onReset={() => setSelectedFriend(null)}>
-                <Chat
-                  userId={user.id}
-                  userName={user.name}
-                  friendId={selectedFriend.id}
-                  friendName={selectedFriend.name}
-                  onBack={() => setSelectedFriend(null)}
-                />
-              </ErrorBoundary>
-            ) : user ? (
-              <div className="main-layout">
-                <main className="tab-content">
-                  {activeTab === 'chats' && (
-                    <ErrorBoundary onReset={handleLogout}>
-                      <ChatList
-                        currentUserId={user.id}
-                        currentUserName={user.name}
-                        onSelectChat={(id, name) => setSelectedFriend({ id, name })}
-                      />
-                    </ErrorBoundary>
-                  )}
-                  {activeTab === 'friends' && (
-                    <ErrorBoundary onReset={handleLogout}>
-                      <UserList
-                        currentUserId={user.id}
-                        currentUserName={user.name}
-                        onSelectUser={(id, name) => setSelectedFriend({ id, name })}
-                        onLogout={handleLogout}
-                      />
-                    </ErrorBoundary>
-                  )}
-                  {activeTab === 'settings' && (
-                    <ErrorBoundary onReset={handleLogout}>
-                      <Settings
-                        userId={user.id}
-                        currentUser={me || { fullName: user.name }}
-                        onLogout={handleLogout}
-                      />
-                    </ErrorBoundary>
-                  )}
-                </main>
-                <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
-              </div>
-            ) : null}
-          </div>
-        </ErrorBoundary>
-      </WifiGatekeeper>
+      <ErrorBoundary onReset={handleLogout}>
+        <div className="app-container">
+          {!user && <AuthModal onLogin={handleLogin} />}
+
+          {user && selectedFriend ? (
+            <ErrorBoundary onReset={() => setSelectedFriend(null)}>
+              <Chat
+                userId={user.id}
+                userName={user.name}
+                friendId={selectedFriend.id}
+                friendName={selectedFriend.name}
+                onBack={() => setSelectedFriend(null)}
+              />
+            </ErrorBoundary>
+          ) : user ? (
+            <div className="main-layout">
+              <main className="tab-content">
+                {activeTab === 'chats' && (
+                  <ErrorBoundary onReset={handleLogout}>
+                    <ChatList
+                      currentUserId={user.id}
+                      currentUserName={user.name}
+                      onSelectChat={(id, name) => setSelectedFriend({ id, name })}
+                    />
+                  </ErrorBoundary>
+                )}
+                {activeTab === 'friends' && (
+                  <ErrorBoundary onReset={handleLogout}>
+                    <UserList
+                      currentUserId={user.id}
+                      currentUserName={user.name}
+                      onSelectUser={(id, name) => setSelectedFriend({ id, name })}
+                      onLogout={handleLogout}
+                    />
+                  </ErrorBoundary>
+                )}
+                {activeTab === 'settings' && (
+                  <ErrorBoundary onReset={handleLogout}>
+                    <Settings
+                      userId={user.id}
+                      currentUser={me || { fullName: user.name }}
+                      onLogout={handleLogout}
+                    />
+                  </ErrorBoundary>
+                )}
+              </main>
+              <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+            </div>
+          ) : null}
+        </div>
+      </ErrorBoundary>
+
     </ConvexProvider>
   );
 }
